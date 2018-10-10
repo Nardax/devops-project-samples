@@ -15,7 +15,7 @@ steps:
       docker build -f Dockerfile -t $(ContainerRegistryUri)/$(imageNameAndTag) .
     displayName: 'docker build'
   - script: |
-      docker login -u $(ContainerRegistryUsername) -p $(ContainerRegistryPassword) $(ContainerRegistryUri)
+      echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
       docker push $(ContainerRegistryUri)/$(imageNameAndTag)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     displayName: 'Push docker image'
