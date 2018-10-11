@@ -8,17 +8,37 @@ pool:
 
 variables:
   imageNameAndTag: '$(ImageName):$(build.buildId)'
+  javaNameAndTag: '$(JAVA_IMAGE_NAME=):$(build.buildId)'
+  nginxNameAndTag: '$(NGINX_IMAGE_NAME=):$(build.buildId)'
 
 steps:
   - script: |
       cd $(JavasampleDockerfileFolderPath)
       docker build -f Dockerfile -t $(ContainerRegistryUri)/$(imageNameAndTag) .
-    displayName: 'docker build'
+    displayName: 'docker build java image'
   - script: |
       echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
       docker push $(ContainerRegistryUri)/$(imageNameAndTag)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    displayName: 'Push docker image'
+    displayName: 'Push docker java image'
+  - script: |
+      cd $(JavasampleDockerfileFolderPath)
+      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
+    displayName: 'docker build nginx image'
+  - script: |
+      echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
+      docker push $(ContainerRegistryUri)/$(nginxNameAndTag)
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    displayName: 'Push docker nginx image'
+  - script: |
+      cd $(JavasampleDockerfileFolderPath)
+      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(javaNameAndTag) .
+    displayName: 'docker build java image'
+  - script: |
+      echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
+      docker push $(ContainerRegistryUri)/$(javaNameAndTag)
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    displayName: 'Push docker java image'
   - task: CopyFiles@2
     inputs:
       sourceFolder: $(Build.SourcesDirectory)/$(JavasampleDockerfileFolderPath)
