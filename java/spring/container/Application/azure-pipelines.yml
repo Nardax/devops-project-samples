@@ -13,7 +13,7 @@ variables:
 steps:
   - script: |
       cd $(JavasampleDockerfileFolderPath)
-      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
+      docker build -f Dockerfile_nginx -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
     displayName: 'docker build nginx image'
   - script: |
       echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
