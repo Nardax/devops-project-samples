@@ -1,0 +1,21 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "uniqueDnsName": {
+        "value": "Emad-testing-2"
+      },
+      "clusterResourceGroupName": {
+        "value": "table-four-docker"
+      },
+      "publicIpName": {
+        "value": "dockerswarm-externalLoadBalancer-public-ip"   
+      },
+      "trafficManagerName": {
+        "value": "trafficmanagerPreProd"
+      },
+      "endpointName": {
+        "value": "endpointPreProd"
+      }
+    }
+  }
