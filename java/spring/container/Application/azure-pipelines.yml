@@ -15,12 +15,12 @@ steps:
   - script: |
       cd $(JavasampleDockerfileFolderPath)
       docker build -f Dockerfile -t $(ContainerRegistryUri)/$(imageNameAndTag) .
-    displayName: 'docker build java image'
+    displayName: 'docker build image'
   - script: |
       echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
       docker push $(ContainerRegistryUri)/$(imageNameAndTag)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    displayName: 'Push docker java image'
+    displayName: 'Push docker image'
   - script: |
       cd $(JavasampleDockerfileFolderPath)
       docker build -f Dockerfile -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
