@@ -1,6 +1,12 @@
 version: '3'
 services:
-  myJavaApp:
-    image: ${IMAGE_NAME}
+  myjavaapp:
+    build: .
+    image: ${JAVA_IMAGE_NAME}
     ports:
       - "8080:8080"
+  nginxapp:
+    build: .
+    image: ${NGINX_IMAGE_NAME}
+    ports:
+      - "5000:80"
