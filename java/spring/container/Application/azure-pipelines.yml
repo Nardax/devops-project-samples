@@ -8,8 +8,8 @@ pool:
 
 variables:
   imageNameAndTag: '$(ImageName):$(build.buildId)'
-  javaNameAndTag: '$(JAVA_IMAGE_NAME=):$(build.buildId)'
-  nginxNameAndTag: '$(NGINX_IMAGE_NAME=):$(build.buildId)'
+  javaNameAndTag: '$(JAVA_IMAGE_NAME):$(build.buildId)'
+  nginxNameAndTag: '$(NGINX_IMAGE_NAME):$(build.buildId)'
 
 steps:
   - script: |
