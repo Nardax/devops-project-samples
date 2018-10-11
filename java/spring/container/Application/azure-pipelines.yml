@@ -7,20 +7,10 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageNameAndTag: '$(ImageName):$(build.buildId)'
   javaNameAndTag: '$(JAVA_IMAGE_NAME):$(build.buildId)'
   nginxNameAndTag: '$(NGINX_IMAGE_NAME):$(build.buildId)'
 
 steps:
-  - script: |
-      cd $(JavasampleDockerfileFolderPath)
-      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(imageNameAndTag) .
-    displayName: 'docker build image'
-  - script: |
-      echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
-      docker push $(ContainerRegistryUri)/$(imageNameAndTag)
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    displayName: 'Push docker image'
   - script: |
       cd $(JavasampleDockerfileFolderPath)
       docker build -f Dockerfile -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
