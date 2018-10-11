@@ -46,6 +46,13 @@ steps:
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: true
     displayName: 'Copy docker compose file to staging directory'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/armtemplates/docker-for-azure
+      contents: '**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+      cleanTargetFolder: false
+    displayName: 'Copy arm templates to staging directory'
   - task: PublishBuildArtifacts@1
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     inputs:
