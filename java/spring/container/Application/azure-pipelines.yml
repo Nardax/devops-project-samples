@@ -7,18 +7,28 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  imageNameAndTag: '$(ImageName):$(build.buildId)'
+  javaNameAndTag: '$(JAVA_IMAGE_NAME):$(build.buildId)'
+  nginxNameAndTag: '$(NGINX_IMAGE_NAME):$(build.buildId)'
 
 steps:
   - script: |
       cd $(JavasampleDockerfileFolderPath)
-      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(imageNameAndTag) .
-    displayName: 'docker build'
+      docker build -f Dockerfile_nginx -t $(ContainerRegistryUri)/$(nginxNameAndTag) .
+    displayName: 'docker build nginx image'
   - script: |
       echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
-      docker push $(ContainerRegistryUri)/$(imageNameAndTag)
+      docker push $(ContainerRegistryUri)/$(nginxNameAndTag)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-    displayName: 'Push docker image'
+    displayName: 'Push docker nginx image'
+  - script: |
+      cd $(JavasampleDockerfileFolderPath)
+      docker build -f Dockerfile -t $(ContainerRegistryUri)/$(javaNameAndTag) .
+    displayName: 'docker build java image'
+  - script: |
+      echo $(ContainerRegistryPassword) | docker login -u $(ContainerRegistryUsername) --password-stdin $(ContainerRegistryUri)
+      docker push $(ContainerRegistryUri)/$(javaNameAndTag)
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    displayName: 'Push docker java image'
   - task: CopyFiles@2
     inputs:
       sourceFolder: $(Build.SourcesDirectory)/$(JavasampleDockerfileFolderPath)
@@ -28,7 +38,7 @@ steps:
     displayName: 'Copy docker compose file to staging directory'
   - task: CopyFiles@2
     inputs:
-      sourceFolder: $(Build.SourcesDirectory)/armtemplates/docker-for-azure
+      sourceFolder: $(Build.SourcesDirectory)/armtemplates
       contents: '**'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
       cleanTargetFolder: false
