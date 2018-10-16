@@ -1,7 +1,6 @@
 #!/bin/sh
 tag=$1
 chrlen=${#tag}
-echo "param length:" $chrlen
 if [ $chrlen -ge 4 ]; then
     echo "Querying for production resource groups tagged with:" $tag
     groups=$(az group list --tag $tag --query "[].name" --output tsv)
