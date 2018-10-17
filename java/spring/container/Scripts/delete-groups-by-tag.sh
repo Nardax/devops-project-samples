@@ -2,7 +2,7 @@
 tag=$1
 chrlen=${#tag}
 if [ $chrlen -ge 4 ]; then
-    echo "Querying for production resource groups tagged with:" $tag
+    echo "Querying for resource groups tagged with:" $tag
     groups=$(az group list --tag $tag --query "[].name" --output tsv)
     for name in $groups
     do

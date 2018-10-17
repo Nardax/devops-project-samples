@@ -1,4 +1,5 @@
 #!/bin/sh
+./delete-groups-by-tag.sh Environment=deprecated
 echo "Querying for production resource groups."
 groups=$(az group list --tag Environment=production --query "[].name" --output tsv)
 for name in $groups
