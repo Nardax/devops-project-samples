@@ -8,6 +8,12 @@
         "description": "workspaceName"
       }
     },
+    "actiongroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "actiongroupName"
+      }
+    },
     "serviceTier": {
       "type": "string",
       "allowedValues": [
@@ -37,15 +43,46 @@
         "Southeast Asia",
         "Australia Southeast"
       ]
-    }
+    },
+    "email": {
+      "type": "string",
+      "metadata": {
+          "description": "Email to send notification to."
+      }
+  },
+  "actionGroupShortName": {
+      "type": "string",
+      "metadata": {
+          "description": "Short name (maximum 12 characters) for the Action group."
+      }
+  }
   },
   "variables": {
     "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
     "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]",
-    "actiongroup": "9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.insights/actiongroups/test2"
+    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
+    "subscriptionId":"[subscription().subscriptionId]",
+    "resourcegroupName":"[resourceGroup().name]"
   },
   "resources": [
+    {
+      "type": "Microsoft.Insights/actionGroups",
+      "apiVersion": "2018-03-01",
+      "name": "[parameters('actionGroupName')]",
+      "location": "Global",
+      "properties": {
+          "groupShortName": "[parameters('actionGroupShortName')]",
+          "enabled": true,
+          "smsReceivers": [],
+          "emailReceivers": [
+              {
+                  "name": "teamemail",
+                  "emailAddress": "[parameters('email')]"
+              }
+          ]
+      }
+  },
     {
       "apiVersion": "2015-11-01-preview",
       "type": "Microsoft.OperationalInsights/workspaces",
@@ -142,7 +179,7 @@
           "location": "[parameters('workspaceName')]",
           "dependsOn": [
             "[variables('searchId')]",
-            "/subscriptions/9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1"
+            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1')]"
           ],
           "properties": {
             "Interval": 5,
@@ -157,16 +194,17 @@
           "location": "[parameters('location')]",
           "dependsOn": [
             "[variables('scheduleId')]",
-            "/subscriptions/9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1"
+            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1')]"
           ],
           "properties": {
             "Type": "Alert",
-            "Name": "CpuAlert",
+            "description": "CPU Usage is above 90%",
+            "severity": "informational",
+            "Name": "CPUAlert",
             "Threshold": {
               "Operator": "gt",
               "Value": 0
-            },
-            "Version": 1
+            }
           }
         },
         {
