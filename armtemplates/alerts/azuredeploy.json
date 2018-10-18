@@ -62,6 +62,7 @@
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
     "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]",
     "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
+    "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
     "subscriptionId":"[subscription().subscriptionId]",
     "resourcegroupName":"[resourceGroup().name]"
   },
@@ -176,10 +177,10 @@
           "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Alert')]",
           "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
           "apiVersion": "2017-03-15-preview",
-          "location": "[parameters('workspaceName')]",
+          "location": "[parameters('location')]",
           "dependsOn": [
             "[variables('searchId')]",
-            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1')]"
+            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
           ],
           "properties": {
             "Interval": 5,
@@ -194,7 +195,7 @@
           "location": "[parameters('location')]",
           "dependsOn": [
             "[variables('scheduleId')]",
-            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1')]"
+            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
           ],
           "properties": {
             "Type": "Alert",
@@ -203,7 +204,18 @@
             "Name": "CPUAlert",
             "Threshold": {
               "Operator": "gt",
-              "Value": 0
+              "Value": 0,
+              "metricsTrigger": {
+                "triggerCondition": "Consecutive",
+                "operator": "gt",
+                "value": "0"
+              }
+            },
+            "AzNsNotification": {
+              "GroupIds": [
+                "[variables('actiongroupId')]"
+              ],
+              "CustomEmailSubject": "Sample alert"
             }
           }
         },

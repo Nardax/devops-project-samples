@@ -1,27 +1,27 @@
 {
- 	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
- 	"contentVersion": "1.0.0.0",
- 	"parameters": {
-        "workspaceName": {
-            "value": "aksdevsandbox1"
-        },
-        "serviceTier": {
-            "value": "PerNode"
-        },
-        "location": {
-            "value": "East US"
-        },
-        "retentionInDays": {
-            "value":  30
-        },
-        "actiongroupName": {
-            "value": "test2"
-        },
-        "email": {
-            "value": "6b471d20.microsoft.com@amer.teams.ms"
-        },
-        "actionGroupShortName": {
-            "value": "test2"
-        }
- 	}
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+       "workspaceName": {
+           "value": "aksdevsandbox0"
+       },
+       "serviceTier": {
+           "value": "PerNode"
+       },
+       "location": {
+           "value": "East US"
+       },
+       "retentionInDays": {
+           "value":  30
+       },
+       "actiongroupName": {
+           "value": "test2"
+       },
+       "email": {
+           "value": "6b471d20.microsoft.com@amer.teams.ms"
+       },
+       "actionGroupShortName": {
+           "value": "test2"
+       }
+    }
 }
