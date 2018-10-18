@@ -39,6 +39,11 @@
       ]
     }
   },
+  "variables": {
+    "searchName": "CPUPercentTest",
+    "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
+    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]"
+  },
   "resources": [
     {
       "apiVersion": "2015-11-01-preview",
@@ -61,7 +66,7 @@
           ],
           "kind": "LinuxSyslog",
           "properties": {
-            "syslogName": "kern",
+            "syslogName": "Syslog",
             "syslogSeverities": [
               {
                 "severity": "emerg"
@@ -116,6 +121,54 @@
           }
         },
         {
+          "apiVersion": "2017-03-15-preview",
+          "name": "CPUPercentTest",
+          "type": "savedSearches",
+          "dependsOn": [
+            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+          ],
+          "properties": {
+            "Category": "AlertIbiza",
+            "DisplayName": "CPU Usage Alert",
+            "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
+            "Version": 2
+          }
+        },
+        {
+          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Alert')]",
+          "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
+          "apiVersion": "2017-03-15-preview",
+          "location": "[parameters('workspaceName')]",
+          "dependsOn": [
+            "[variables('searchId')]",
+            "/subscriptions/9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1"
+          ],
+          "properties": {
+            "Interval": 5,
+            "QueryTimeSpan": 5,
+            "Active": "true"
+          }
+        },
+        {
+          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Alert/', 'OurAlert')]",
+          "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules/actions",
+          "apiVersion": "2017-03-15-preview",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+            "[variables('scheduleId')]",
+            "/subscriptions/9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.OperationalInsights/workspaces/aksdevsandbox1"
+          ],
+          "properties": {
+            "Type": "Alert",
+            "Name": "CpuAlert",
+            "Threshold": {
+              "Operator": "gt",
+              "Value": 0
+            },
+            "Version": 1
+          }
+        },
+        {
             "apiVersion": "2015-11-01-preview",
             "type": "datasources",
             "name": "sampleLinuxPerf2",
@@ -157,7 +210,7 @@
               "instanceName": "*",
               "intervalSeconds": 10
             }
-          }
+          }          
       ]
     }
   ],
