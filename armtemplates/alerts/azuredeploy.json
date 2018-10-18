@@ -42,7 +42,8 @@
   "variables": {
     "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
-    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]"
+    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]",
+    "actiongroup": "9daafb47-e763-4007-8384-36253bd5c0b6/resourceGroups/aksdevsandbox/providers/Microsoft.insights/actiongroups/test2"
   },
   "resources": [
     {
