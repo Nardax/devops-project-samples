@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
        "workspaceName": {
-           "value": "aksdevsandbox0"
+           "value": "Your Workspace Name"
        },
        "serviceTier": {
            "value": "PerNode"
@@ -15,13 +15,16 @@
            "value":  30
        },
        "actiongroupName": {
-           "value": "test2"
-       },
-       "email": {
-           "value": "6b471d20.microsoft.com@amer.teams.ms"
+           "value": "Your Action Group Name"
        },
        "actionGroupShortName": {
-           "value": "test2"
-       }
+           "value": "Your Action Group Short Name"
+       },
+       "email": {
+           "value": ""   
+       },
+    "alertName": {
+        "value": "CPU Alert"
+        }
     }
 }

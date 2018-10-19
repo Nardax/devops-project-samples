@@ -55,12 +55,18 @@
       "metadata": {
           "description": "Short name (maximum 12 characters) for the Action group."
       }
+  },
+  "alertName": {
+    "type": "string",
+    "metadata": {
+      "description": "alertName"
+    }
   }
   },
   "variables": {
     "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
-    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Alert')]",
+    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Schedule')]",
     "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
     "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
     "subscriptionId":"[subscription().subscriptionId]",
@@ -78,7 +84,7 @@
           "smsReceivers": [],
           "emailReceivers": [
               {
-                  "name": "teamemail",
+                  "name": "teamEmail",
                   "emailAddress": "[parameters('email')]"
               }
           ]
@@ -99,7 +105,7 @@
         {
           "apiVersion": "2015-11-01-preview",
           "type": "datasources",
-          "name": "sampleSyslog1",
+          "name": "myDataSource",
           "dependsOn": [
             "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
           ],
@@ -128,7 +134,7 @@
         {
           "apiVersion": "2015-11-01-preview",
           "type": "datasources",
-          "name": "sampleLinuxPerf1",
+          "name": "myDataSourceTypes",
           "dependsOn": [
             "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
           ],
@@ -174,7 +180,7 @@
           }
         },
         {
-          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Alert')]",
+          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Schedule')]",
           "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
           "apiVersion": "2017-03-15-preview",
           "location": "[parameters('location')]",
@@ -189,7 +195,7 @@
           }
         },
         {
-          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Alert/', 'OurAlert')]",
+          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Schedule/', parameters('alertName'))]",
           "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules/actions",
           "apiVersion": "2017-03-15-preview",
           "location": "[parameters('location')]",
