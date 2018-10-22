@@ -5,20 +5,20 @@
     "workspaceName": {
       "type": "string",
       "metadata": {
-        "description": "workspaceName"
+        "description": "Work Space Name"
       }
     },
     "actiongroupName": {
       "type": "string",
       "metadata": {
-        "description": "actiongroupName"
+        "description": "Action Group Name"
       }
     },
     "location": {
       "type": "string",
       "allowedValues": [
         "East US",
-       "West Europe",
+        "West Europe",
         "Southeast Asia",
         "Australia Southeast"
       ]
@@ -26,77 +26,94 @@
     "alertName": {
       "type": "string",
       "metadata": {
-        "description": "alertName"
+        "description": "Alert Name"
+      }
+    },
+    "searchName": {
+      "type": "string",
+      "metadata": {
+        "description": "Search Name"
+      }
+    },
+    "scheduleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Schedule Name"
+      }
+    },
+    "customEmailSubject": {
+      "type": "string",
+      "metadata": {
+        "description": "Custom Email Subject"
       }
     }
   },
   "variables": {
-    "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
-    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Schedule')]",
+    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), parameters('scheduleName'))]",
     "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
     "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
     "subscriptionId": "[subscription().subscriptionId]",
     "resourcegroupName": "[resourceGroup().name]"
   },
-      "resources": [
-        {
-          "apiVersion": "2017-03-15-preview",
-          "name": "[concat(parameters('workspaceName'), '/CPUPercentTest')]",
-          "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
-          "dependsOn": [],
-          "properties": {
-            "mode": "Incremental",
-            "Category": "AlertIbiza",
-            "DisplayName": "CPU Usage Alert",
-            "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
-            "Version": 2
+  "resources": [
+    {
+      "apiVersion": "2017-03-15-preview",
+      "name": "[concat(parameters('workspaceName'), '/', parameters('searchName')]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "Category": "AlertIbiza",
+        "DisplayName": "CPU Usage Alert",
+        "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
+        "Version": 2
+      }
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/', parameters('scheduleName')]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
+      "apiVersion": "2017-03-15-preview",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('searchId')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "Interval": 5,
+        "QueryTimeSpan": 5,
+        "Active": "true"
+      }
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/', parameters('scheduleName'),'/', parameters('alertName'))]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules/actions",
+      "apiVersion": "2017-03-15-preview",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('scheduleId')]"
+      ],
+      "properties": {
+        "Type": "Alert",
+        "description": "CPU Usage is above 90%",
+        "severity": "informational",
+        "Name": "CPUAlert",
+        "Threshold": {
+          "Operator": "gt",
+          "Value": 0,
+          "metricsTrigger": {
+            "triggerCondition": "Consecutive",
+            "operator": "gt",
+            "value": "0"
           }
         },
-        {
-          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Schedule')]",
-          "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
-          "apiVersion": "2017-03-15-preview",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[variables('searchId')]"
+        "AzNsNotification": {
+          "GroupIds": [
+            "[variables('actiongroupId')]"
           ],
-          "properties": {
-            "mode":"Incremental",
-            "Interval": 5,
-            "QueryTimeSpan": 5,
-            "Active": "true"
-          }
-        },
-        {
-          "name": "[concat(parameters('workspaceName'), '/', variables('searchName'), '/Schedule/', parameters('alertName'))]",
-          "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules/actions",
-          "apiVersion": "2017-03-15-preview",
-          "location": "[parameters('location')]",
-          "dependsOn": [
-            "[variables('scheduleId')]"
-          ],
-          "properties": {
-            "Type": "Alert",
-            "description": "CPU Usage is above 90%",
-            "severity": "informational",
-            "Name": "CPUAlert",
-            "Threshold": {
-              "Operator": "gt",
-              "Value": 0,
-              "metricsTrigger": {
-                "triggerCondition": "Consecutive",
-                "operator": "gt",
-                "value": "0"
-              }
-            },
-            "AzNsNotification": {
-              "GroupIds": [
-                "[variables('actiongroupId')]"
-              ],
-             "CustomEmailSubject": "Sample alert"
-            }
-          }
+          "CustomEmailSubject": "variables('customEmailSubject')"
         }
-      ]
+      }
+    }
+  ]
 }
