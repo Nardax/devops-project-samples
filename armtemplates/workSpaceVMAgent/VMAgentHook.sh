@@ -5,12 +5,15 @@ CLUSTER_RESOURCE_GROUP=""
 WORKSPACE_RESOURCE_GROUP=""
 LOCATION_VARIABLE=""
 CLUSTER_NAME=""
+DEPLOYMENT_NAME=$1 
 
 #---------------------------------------------------------------------------------------
 
 # Get workspaceKey and customerId from deployment output
-workspaceKey=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n azuredeploy --query properties.outputs.workspaceKey.value)
-workspaceId=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n azuredeploy --query properties.outputs.customerId.value)
+workspaceKey=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${DEPLOYMENT_NAME} --query properties.outputs.workspaceKey.value)
+workspaceId=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${DEPLOYMENT_NAME} --query properties.outputs.customerId.value)
+echo $workspaceKey
+echo $workspaceId
 
 vmresourcegroup="MC_${CLUSTER_RESOURCE_GROUP}_${CLUSTER_NAME}_${LOCATION_VARIABLE}"
 

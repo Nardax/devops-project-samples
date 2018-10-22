@@ -14,166 +14,39 @@
         "description": "actiongroupName"
       }
     },
-    "serviceTier": {
-      "type": "string",
-      "allowedValues": [
-        "Free",
-        "Standalone",
-        "PerNode",
-        "PerGB2018"
-      ],
-      "metadata": {
-        "description": "Service Tier: Free, Standalone, PerNode, or PerGB2018"
-        }
-      },
-    "retentionInDays": {
-      "type": "int",
-      "defaultValue": 30,
-      "minValue": 7,
-      "maxValue": 730,
-      "metadata": {
-        "description": "Number of days of retention. Free plans can only have 7 days, Standalone and OMS plans include 30 days for free"
-      }
-    },
     "location": {
       "type": "string",
       "allowedValues": [
         "East US",
-        "West Europe",
+       "West Europe",
         "Southeast Asia",
         "Australia Southeast"
       ]
     },
-    "email": {
+    "alertName": {
       "type": "string",
       "metadata": {
-          "description": "Email to send notification to."
+        "description": "alertName"
       }
-  },
-  "actionGroupShortName": {
-    "type": "string",
-    "metadata": {
-      "description": "Short name (maximum 12 characters) for the Action group."
     }
   },
-  "alertName": {
-    "type": "string",
-    "metadata": {
-      "description": "alertName"
-    }
-  }
-},
   "variables": {
     "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
     "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Schedule')]",
-    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourceGroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
+    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
     "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
-    "subscriptionId":"[subscription().subscriptionId]",
-    "resourceGroupName":"[resourceGroup().name]",
-    "workspaceResourceId": "[resourceId(variables('resourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+    "subscriptionId": "[subscription().subscriptionId]",
+    "resourcegroupName": "[resourceGroup().name]"
   },
-  "resources": [
-    {
-      "type": "Microsoft.Insights/actionGroups",
-      "apiVersion": "2018-03-01",
-      "name": "[parameters('actionGroupName')]",
-      "location": "Global",
-      "properties": {
-          "groupShortName": "[parameters('actionGroupShortName')]",
-          "enabled": true,
-          "smsReceivers": [],
-          "emailReceivers": [
-              {
-                  "name": "teamEmail",
-                  "emailAddress": "[parameters('email')]"
-              }
-          ]
-      }
-  },
-    {
-      "apiVersion": "2015-11-01-preview",
-      "type": "Microsoft.OperationalInsights/workspaces",
-      "name": "[parameters('workspaceName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "sku": {
-          "Name": "[parameters('serviceTier')]"
-        },
-        "retentionInDays": 30
-      },
       "resources": [
         {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "myDataSource",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
-          "kind": "LinuxSyslog",
-          "properties": {
-            "syslogName": "Syslog",
-            "syslogSeverities": [
-              {
-                "severity": "emerg"
-              },
-              {
-                "severity": "alert"
-              },
-              {
-                "severity": "crit"
-              },
-              {
-                "severity": "err"
-              },
-              {
-                "severity": "warning"
-              }
-            ]
-          }
-        },
-        {
-          "apiVersion": "2015-11-01-preview",
-          "type": "datasources",
-          "name": "myDataSourceTypes",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
-          "kind": "LinuxPerformanceObject",
-          "properties": {
-            "performanceCounters": [
-              {
-                "counterName": "% Used Inodes"
-              },
-              {
-                "counterName": "Free Megabytes"
-              },
-              {
-                "counterName": "% Used Space"
-              },
-              {
-                "counterName": "Disk Transfers/sec"
-              },
-              {
-                "counterName": "Disk Reads/sec"
-              },
-              {
-                "counterName": "Disk Writes/sec"
-              }
-            ],
-            "objectName": "Logical Disk",
-            "instanceName": "*",
-            "intervalSeconds": 10
-          }
-        },
-        {
           "apiVersion": "2017-03-15-preview",
-          "name": "CPUPercentTest",
-          "type": "savedSearches",
-          "dependsOn": [
-            "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-          ],
+          "name": "[concat(parameters('workspaceName'), '/CPUPercentTest')]",
+          "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+          "dependsOn": [],
           "properties": {
+            "mode": "Incremental",
             "Category": "AlertIbiza",
             "DisplayName": "CPU Usage Alert",
             "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
@@ -186,10 +59,10 @@
           "apiVersion": "2017-03-15-preview",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[variables('searchId')]",
-            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+            "[variables('searchId')]"
           ],
           "properties": {
+            "mode":"Incremental",
             "Interval": 5,
             "QueryTimeSpan": 5,
             "Active": "true"
@@ -201,8 +74,7 @@
           "apiVersion": "2017-03-15-preview",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[variables('scheduleId')]",
-            "[concat('/subscriptions/', variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+            "[variables('scheduleId')]"
           ],
           "properties": {
             "Type": "Alert",
@@ -222,88 +94,9 @@
               "GroupIds": [
                 "[variables('actiongroupId')]"
               ],
-              "CustomEmailSubject": "Sample alert"
+             "CustomEmailSubject": "Sample alert"
             }
           }
-        },
-        {
-            "apiVersion": "2015-11-01-preview",
-            "type": "datasources",
-            "name": "sampleLinuxPerf2",
-            "dependsOn": [
-              "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-            ],
-            "kind": "LinuxPerformanceObject",
-            "properties": {
-              "performanceCounters": [
-                
-                {
-                  "counterName": "Available MBytes Memory"
-                },
-                {
-                  "counterName": "% Available Memory"
-                }
-              ],
-              "objectName": "Memory",
-              "instanceName": "*",
-              "intervalSeconds": 10
-            }
-          },
-          {
-            "apiVersion": "2015-11-01-preview",
-            "type": "datasources",
-            "name": "sampleLinuxPerf3",
-            "dependsOn": [
-              "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
-            ],
-            "kind": "LinuxPerformanceObject",
-            "properties": {
-              "performanceCounters": [
-                
-                {
-                  "counterName": "% Processor Time"
-                }
-              ],
-              "objectName": "Processor",
-              "instanceName": "*",
-              "intervalSeconds": 10
-            }
-          }          
+        }
       ]
-    }
-  ],
-  "outputs": {
-    "workspaceName": {
-      "type": "string",
-      "value": "[parameters('workspaceName')]"
-    },
-    "provisioningState": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').provisioningState]"
-    },
-    "source": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').source]"
-    },
-    "pricingTier": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').sku.name]"
-    },
-    "retentionInDays": {
-      "type": "int",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').retentionInDays]"
-    },
-    "portalUrl": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').portalUrl]"
-    },
-    "customerId": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').customerId]"
-    },
-    "workspaceKey": {
-      "type": "string",
-      "value": "[listKeys(variables('workspaceResourceId'),'2015-11-01-preview').primarySharedKey]"
-    }
-  }
 }

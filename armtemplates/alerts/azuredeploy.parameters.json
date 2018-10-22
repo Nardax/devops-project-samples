@@ -5,26 +5,14 @@
        "workspaceName": {
            "value": "Your Workspace Name"
        },
-       "serviceTier": {
-           "value": "PerNode"
-       },
        "location": {
            "value": "East US"
        },
-       "retentionInDays": {
-           "value":  30
-       },
        "actiongroupName": {
-           "value": "Your Action Group Name"
+           "value": "YourActionGroupName"
        },
-       "actionGroupShortName": {
-           "value": "Your Action Group Short Name"
-       },
-       "email": {
-           "value": ""   
-       },
-    "alertName": {
-        "value": "CPU Alert"
+       "alertName": {
+            "value": "CPU Alert"
         }
     }
 }
