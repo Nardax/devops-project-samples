@@ -51,10 +51,10 @@
       }
   },
   "actionGroupShortName": {
-      "type": "string",
-      "metadata": {
-          "description": "Short name (maximum 12 characters) for the Action group."
-      }
+    "type": "string",
+    "metadata": {
+      "description": "Short name (maximum 12 characters) for the Action group."
+    }
   },
   "alertName": {
     "type": "string",
@@ -62,15 +62,16 @@
       "description": "alertName"
     }
   }
-  },
+},
   "variables": {
     "searchName": "CPUPercentTest",
     "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), variables('searchName'))]",
     "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), variables('searchName'), 'Schedule')]",
-    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
+    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourceGroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
     "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
     "subscriptionId":"[subscription().subscriptionId]",
-    "resourcegroupName":"[resourceGroup().name]"
+    "resourceGroupName":"[resourceGroup().name]",
+    "workspaceResourceId": "[resourceId(variables('resourceGroupName'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
   },
   "resources": [
     {
@@ -284,10 +285,6 @@
       "type": "string",
       "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').source]"
     },
-    "customerId": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').customerId]"
-    },
     "pricingTier": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').sku.name]"
@@ -299,6 +296,14 @@
     "portalUrl": {
       "type": "string",
       "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').portalUrl]"
+    },
+    "customerId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').customerId]"
+    },
+    "workspaceKey": {
+      "type": "string",
+      "value": "[listKeys(variables('workspaceResourceId'),'2015-11-01-preview').primarySharedKey]"
     }
   }
 }
