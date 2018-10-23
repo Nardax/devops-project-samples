@@ -1,21 +1,21 @@
 #!/bin/bash
 # Copyright (c) Microsoft Corporation. All rights reserved.
 
-CLUSTER_RESOURCE_GROUP=""
-WORKSPACE_RESOURCE_GROUP=""
-LOCATION_VARIABLE=""
-CLUSTER_NAME=""
-DEPLOYMENT_NAME=$1 
+CLUSTER_RESOURCE_GROUP=${1:-defaultResourceGroup}
+WORKSPACE_RESOURCE_GROUP=${2:-defaultResourceGroup}
+LOCATION=${3:-westus2}
+CLUSTER_NAME=${4:-clusterDefault}
+WORKSPACE_DEPLOYMENT=${5:-azuredeploy_workspace}
 
 #---------------------------------------------------------------------------------------
 
 # Get workspaceKey and customerId from deployment output
-workspaceKey=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${DEPLOYMENT_NAME} --query properties.outputs.workspaceKey.value)
-workspaceId=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${DEPLOYMENT_NAME} --query properties.outputs.customerId.value)
+workspaceKey=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${WORKSPACE_DEPLOYMENT} --query properties.outputs.workspaceKey.value)
+workspaceId=$(az group deployment show -g ${WORKSPACE_RESOURCE_GROUP} -n ${WORKSPACE_DEPLOYMENT} --query properties.outputs.customerId.value)
 echo $workspaceKey
 echo $workspaceId
 
-vmresourcegroup="MC_${CLUSTER_RESOURCE_GROUP}_${CLUSTER_NAME}_${LOCATION_VARIABLE}"
+vmresourcegroup="MC_${CLUSTER_RESOURCE_GROUP}_${CLUSTER_NAME}_${LOCATION}"
 
 vmlist=$(az vm list-ip-addresses --resource-group $vmresourcegroup)
 
