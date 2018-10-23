@@ -66,7 +66,7 @@
         "mode": "Incremental",
         "Category": "AlertIbiza",
         "DisplayName": "CPU Usage Alert",
-        "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
+        "Query": "Perf\n| where TimeGenerated > ago(1m)\n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
         "Version": 2
       }
     },

@@ -65,8 +65,8 @@
       "properties": {
         "mode": "Incremental",
         "Category": "AlertIbiza",
-        "DisplayName": "CPU Usage Alert",
-        "Query": "Perf\n| where TimeGenerated > ago(1m) \n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
+        "DisplayName": "Disk Usage Alert",
+        "Query": "Perf\n| where TimeGenerated > ago(1m)\n| where CounterName == \"Free Megabytes\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue < 100",
         "Version": 2
       }
     },
@@ -95,9 +95,9 @@
       ],
       "properties": {
         "Type": "Alert",
-        "description": "CPU Usage is above 90%",
+        "description": "Disk Usage is above 90%",
         "severity": "informational",
-        "Name": "CPUAlert",
+        "Name": "DiskAlert",
         "Threshold": {
           "Operator": "gt",
           "Value": 0,

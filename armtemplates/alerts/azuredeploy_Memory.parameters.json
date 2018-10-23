@@ -12,16 +12,16 @@
             "value": "YourActionGroupName"
         },
         "alertName": {
-            "value": "CPU Alert"
+            "value": "Memory Alert"
         },
         "searchName": {
-            "value": "CPUPercentTest"
+            "value": "MemoryPercentTest"
         },
         "scheduleName": {
             "value": "Schedule"
         },
         "customEmailSubject": {
-            "value": "CPU alert"
+            "value": "Memory alert"
         }
     }
 }
