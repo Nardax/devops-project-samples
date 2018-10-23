@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "actiongroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "actiongroupName"
+            }
+        },
+        "actionGroupShortName": {
+            "type": "string",
+            "metadata": {
+                "description": "Short name (maximum 12 characters) for the Action group."
+            }
+        },
+        "emailName": {
+            "type": "string",
+            "metadata": {
+                "description": "Email name."
+            }
+        },
+        "email": {
+            "type": "string",
+            "metadata": {
+                "description": "Email to send notification to."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Insights/actionGroups",
+            "apiVersion": "2018-03-01",
+            "name": "[parameters('actionGroupName')]",
+            "location": "Global",
+            "properties": {
+                "groupShortName": "[parameters('actionGroupShortName')]",
+                "enabled": true,
+                "smsReceivers": [],
+                "emailReceivers": [
+                    {
+                        "name": "[parameters('emailName')]",
+                        "emailAddress": "[parameters('email')]"
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}

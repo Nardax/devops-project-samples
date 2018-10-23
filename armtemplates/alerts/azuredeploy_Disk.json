@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspaceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Work Space Name"
+      }
+    },
+    "actiongroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Action Group Name"
+      }
+    },
+    "location": {
+      "type": "string",
+      "allowedValues": [
+        "East US",
+        "West Europe",
+        "Southeast Asia",
+        "Australia Southeast"
+      ]
+    },
+    "alertName": {
+      "type": "string",
+      "metadata": {
+        "description": "Alert Name"
+      }
+    },
+    "searchName": {
+      "type": "string",
+      "metadata": {
+        "description": "Search Name"
+      }
+    },
+    "scheduleName": {
+      "type": "string",
+      "metadata": {
+        "description": "Schedule Name"
+      }
+    },
+    "customEmailSubject": {
+      "type": "string",
+      "metadata": {
+        "description": "Custom Email Subject"
+      }
+    }
+  },
+  "variables": {
+    "searchId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches', parameters('workspaceName'), parameters('searchName'))]",
+    "scheduleId": "[resourceId('Microsoft.OperationalInsights/workspaces/savedSearches/schedules', parameters('workspaceName'), parameters('searchName'), parameters('scheduleName'))]",
+    "actiongroup": "[concat(variables('subscriptionId'), '/resourceGroups/', variables('resourcegroupName'), '/providers/Microsoft.insights/actiongroups/',parameters('actiongroupName'))]",
+    "actiongroupId": "[concat('/subscriptions/', variables('actiongroup'))]",
+    "subscriptionId": "[subscription().subscriptionId]",
+    "resourcegroupName": "[resourceGroup().name]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-03-15-preview",
+      "name": "[concat(parameters('workspaceName'), '/', parameters('searchName'))]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "Category": "AlertIbiza",
+        "DisplayName": "Disk Usage Alert",
+        "Query": "Perf\n| where TimeGenerated > ago(1m)\n| where CounterName == \"Free Megabytes\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue < 100",
+        "Version": 2
+      }
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/', parameters('searchName'), '/', parameters('scheduleName'))]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules",
+      "apiVersion": "2017-03-15-preview",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('searchId')]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "Interval": 5,
+        "QueryTimeSpan": 5,
+        "Active": "true"
+      }
+    },
+    {
+      "name": "[concat(parameters('workspaceName'), '/', parameters('searchName'), '/', parameters('scheduleName'),'/', parameters('alertName'))]",
+      "type": "Microsoft.OperationalInsights/workspaces/savedSearches/schedules/actions",
+      "apiVersion": "2017-03-15-preview",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('scheduleId')]"
+      ],
+      "properties": {
+        "Type": "Alert",
+        "description": "Remaining disk space is under 100MB",
+        "severity": "critical",
+        "Name": "DiskAlert",
+        "Threshold": {
+          "Operator": "gt",
+          "Value": 0,
+          "metricsTrigger": {
+            "triggerCondition": "Consecutive",
+            "operator": "gt",
+            "value": "0"
+          }
+        },
+        "AzNsNotification": {
+          "GroupIds": [
+            "[variables('actiongroupId')]"
+          ],
+          "CustomEmailSubject":  "[parameters('customEmailSubject')]"
+        }
+      }
+    }
+  ]
+}
