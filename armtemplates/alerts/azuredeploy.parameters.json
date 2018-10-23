@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "workspaceName": {
-            "value": "Your Workspace Name"
+            "value": "YourWorkspaceName"
         },
         "location": {
             "value": "East US"
