@@ -111,7 +111,7 @@
           "GroupIds": [
             "[variables('actiongroupId')]"
           ],
-          "CustomEmailSubject": "variables('customEmailSubject')"
+          "CustomEmailSubject":  "[parameters('customEmailSubject')]"
         }
       }
     }
