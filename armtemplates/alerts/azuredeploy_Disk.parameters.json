@@ -12,16 +12,16 @@
             "value": "YourActionGroupName"
         },
         "alertName": {
-            "value": "CPU Alert"
+            "value": "Disk Alert"
         },
         "searchName": {
-            "value": "CPUPercentTest"
+            "value": "DiskFreeSpaceIsUnder100MB"
         },
         "scheduleName": {
             "value": "Schedule"
         },
         "customEmailSubject": {
-            "value": "CPU alert"
+            "value": "ALERT: Free Disk Space is Low"
         }
     }
 }

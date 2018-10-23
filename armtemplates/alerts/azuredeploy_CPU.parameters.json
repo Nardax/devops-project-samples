@@ -15,13 +15,13 @@
             "value": "CPU Alert"
         },
         "searchName": {
-            "value": "CPUPercentTest"
+            "value": "CPUUsageIsHigh"
         },
         "scheduleName": {
             "value": "Schedule"
         },
         "customEmailSubject": {
-            "value": "CPU alert"
+            "value": "ALERT: CPU Usage is High"
         }
     }
 }
