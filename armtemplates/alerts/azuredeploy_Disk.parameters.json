@@ -15,13 +15,13 @@
             "value": "Disk Alert"
         },
         "searchName": {
-            "value": "DiskPercentTest"
+            "value": "DiskFreeSpaceIsUnder100MB"
         },
         "scheduleName": {
             "value": "Schedule"
         },
         "customEmailSubject": {
-            "value": "Disk alert"
+            "value": "ALERT: Free Disk Space is Low"
         }
     }
 }

@@ -95,8 +95,8 @@
       ],
       "properties": {
         "Type": "Alert",
-        "description": "Disk Usage is above 90%",
-        "severity": "informational",
+        "description": "Remaining disk space is under 100MB",
+        "severity": "critical",
         "Name": "DiskAlert",
         "Threshold": {
           "Operator": "gt",

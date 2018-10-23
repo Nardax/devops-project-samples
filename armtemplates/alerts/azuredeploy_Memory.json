@@ -66,7 +66,7 @@
         "mode": "Incremental",
         "Category": "AlertIbiza",
         "DisplayName": "Memory Usage Alert",
-        "Query": "Perf\n| where TimeGenerated > ago(1m)\n| where CounterName == \"% Processor Time\" and InstanceName == \"_Total\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue > 90",
+        "Query": "Perf\n| where TimeGenerated > ago(5m)\n| where CounterName == \"% Available Memory\" and InstanceName == \"Memory\"\n| summarize AggregatedValue = avg(CounterValue) by Computer\n| where AggregatedValue < 10",
         "Query": "",
         "Version": 2
       }
@@ -97,7 +97,7 @@
       "properties": {
         "Type": "Alert",
         "description": "Memory Usage is above 90%",
-        "severity": "informational",
+        "severity": "critical",
         "Name": "MemoryAlert",
         "Threshold": {
           "Operator": "gt",
